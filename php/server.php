@@ -6,7 +6,7 @@ include_once("./methods.php");
    $POST = json_decode(file_get_contents("php://input"), true);
     
    if(isset ($POST["option"])){
-      saveuser($POST["nombre"]);
+      saveuser($POST["nombre"],$POST["imagen"]);
    }
    if(isset ($POST["option2"])){
       savempresa($POST["empresa"]);

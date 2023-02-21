@@ -1,4 +1,5 @@
 import { new_empresa, view_empresas,nuevo_empleado_dacesa,view_empleados} from "./script.js";
+let tablaDatos =null;
 let json = [];
 let cont = 1;
 let div_card = null;
@@ -8,10 +9,27 @@ let div_card_button = null;
 let selector = 0;
 let container = document.getElementById("container");
 let cambio_text = document.getElementById("change");
-let table = document.createElement("table");
-    table.id="example";
+let img_preview = null;
+let div_load = document.getElementById("load");
+
+async function mostrar(){
+  var archivo = document.getElementById("file").files[0];
+  var reader = new FileReader();
+  if (file) {
+    reader.readAsDataURL(archivo );
+    reader.onloadend = function () {
+      document.getElementById("img").src = reader.result;
+      img_preview = reader.result;
+    }
+  }
+}
 cambio();
 async function cambio(){
+  div_load.style.visibility = "visible";
+  div_load.style.marginTop = "10rem";
+  div_load.style.marginLeft="35rem";
+
+  document.getElementById("espacio").style.marginTop = "0rem";
   selector ++;
   if(selector ==2){
     selector = 0;
@@ -74,7 +92,7 @@ nuevo_empleado.addEventListener("click", (event) => {
       }
       if (conteo2 === 1) {
         div_card_img.src =
-          "https://www.kraftwerk.at/app/uploads/fly-images/962/reference-img-worlds-of-adventure-park-4-1920x9999.jpg"; //key;
+        element[key];
         div_card_button.text = "Previsualizar";
         div_card.appendChild(div_card_img);
         div_card.appendChild(div_card_title);
@@ -85,6 +103,11 @@ nuevo_empleado.addEventListener("click", (event) => {
       conteo2++;
     });
   });
+  div_load.style.visibility = "hidden";
+  div_load.style.width = "0px";
+  div_load.style.height = "0px";
+  div_load.style.marginTop = "0rem";
+
 }
 
 
@@ -127,8 +150,7 @@ export async function refresh_empresas_view() {
       
       }
       if (conteo === 1) {
-        div_card_img.src =
-          "https://www.kraftwerk.at/app/uploads/fly-images/962/reference-img-worlds-of-adventure-park-4-1920x9999.jpg"; //key;
+        div_card_img.src =element[key];
         div_card_button.text = "Previsualizar";
         div_card.appendChild(div_card_img);
         div_card.appendChild(div_card_title);
@@ -139,35 +161,41 @@ export async function refresh_empresas_view() {
       conteo++;
     });
   });
+  div_load.style.visibility = "hidden";
+  div_load.style.width = "0px";
+  div_load.style.height = "0px";
+  div_load.style.marginTop = "0rem";
+
 }
-function click_empresa(e){
-
-    let info = e.getAttribute("data-info");
-    info = JSON.parse(info);
-    let dataset = [];
-    let datos = [];
-    info.forEach((element) => {
-      Object.keys(element).map(function (key, index) {
-        dataset.push(key);
-      });
-
-    })
-    container.appendChild(table);
-    $(document).ready(function () {
-      $('#example').DataTable({
-        'bSort': false,
-          data: dataset,
-
-      });
-  });
-  
+let div_inputs2 = document.createElement("div");
+let input_file2 = document.createElement("input");
+input_file2.type = "file";
+input_file2.id = "file";
+input_file2.accept = "image/*";
+input_file2.classList.add("form-control");
+input_file2.onchange = function(){
+  mostrar()
 }
+let br2 = document.createElement("br");
+let img2 = document.createElement("img");
+img2.id = "img";
+
+let input_text2 = document.createElement("input");
+input_text2.type = "text";
+input_text2.id = "name";
+input_text2.classList.add("swal2-input");
+input_text2.placeholder = "Nombre della empresa";
+div_inputs2.appendChild(input_file2);
+div_inputs2.appendChild(br2);
+div_inputs2.appendChild(img2);
+div_inputs2.appendChild(br2);
+div_inputs2.appendChild(input_text2);
 
 async function create_empresa() {
   let empresa = null;
   Swal.fire({
     title: "Nueva Empresa",
-    html: `<input type="text" id="name" class="swal2-input" placeholder="Nombre de la empresa">`,
+    html: div_inputs2,
     confirmButtonText: "Continuar",
     focusConfirm: false,
     showCloseButton: true,
@@ -223,7 +251,7 @@ async function create_inputs(empresa) {
       }
      
      if (pasa ===0) {
-      new_empresa(datos_empresas, empresa);
+      new_empresa(datos_empresas, empresa,img_preview);
       div_card = document.createElement("div");
       div_card.classList.add("card");
       div_card.style.width = "15rem";
@@ -240,8 +268,7 @@ async function create_inputs(empresa) {
       div_card_button.classList.add("btn");
       div_card_button.classList.add("btn-primary");
       div_card_title.textContent = empresa;
-      div_card_img.src =
-      "https://www.kraftwerk.at/app/uploads/fly-images/962/reference-img-worlds-of-adventure-park-4-1920x9999.jpg"; //key;
+      div_card_img.src =img_preview;
     div_card_button.text = "Previsualizar";
     div_card.appendChild(div_card_img);
     div_card.appendChild(div_card_title);
@@ -264,11 +291,35 @@ async function new_inputs() {
   div.appendChild(input);
   cont++;
 }
+let div_inputs = document.createElement("div");
+let input_file = document.createElement("input");
+input_file.type = "file";
+input_file.id = "file";
+input_file.accept = "image/*";
+input_file.classList.add("form-control");
+input_file.onchange = function(){
+  mostrar()
+}
+let br = document.createElement("br");
+let img = document.createElement("img");
+img.id = "img";
 
+let input_text = document.createElement("input");
+input_text.type = "text";
+input_text.id = "empleado";
+input_text.classList.add("swal2-input");
+input_text.placeholder = "Nombre del empleado";
+div_inputs.appendChild(input_file);
+div_inputs.appendChild(br);
+div_inputs.appendChild(img);
+div_inputs.appendChild(br);
+div_inputs.appendChild(input_text);
+
+input_text.placeholder = "Nombre del empleado";
 async function create_empleado(){
   Swal.fire({
     title: "Nuevo Empleado",
-    html: `<input type="text" id="empleado" class="swal2-input" placeholder="Nombre del empleado">`,
+    html: div_inputs,
     confirmButtonText: "Registrar",
     focusConfirm: false,
     showCloseButton: true,
@@ -277,7 +328,7 @@ async function create_empleado(){
       if (!empleado) {
         Swal.showValidationMessage(`Por favor Ingresa un nombre `);
       } else {
-        nuevo_empleado_dacesa(empleado);
+        nuevo_empleado_dacesa(String(img_preview),empleado);
         div_card = document.createElement("div");
       div_card.classList.add("card");
       div_card.style.width = "15rem";
@@ -294,8 +345,7 @@ async function create_empleado(){
       div_card_button.classList.add("btn");
       div_card_button.classList.add("btn-primary");
       div_card_title.textContent = empleado;
-      div_card_img.src =
-      "https://www.kraftwerk.at/app/uploads/fly-images/962/reference-img-worlds-of-adventure-park-4-1920x9999.jpg"; //key;
+      div_card_img.src =img_preview; //key;
     div_card_button.text = "Previsualizar";
     div_card.appendChild(div_card_img);
     div_card.appendChild(div_card_title);
@@ -305,4 +355,46 @@ async function create_empleado(){
       }
     },
   }).then((result) => {});
+}
+async function click_empresa(e){
+  document.getElementById("espacio").style.marginTop = "2rem";
+  container.innerHTML = "";
+  let info = e.getAttribute("data-info");
+  info = JSON.parse(info);
+  var dataset = [];
+  let datos = [];
+  let titulos = [];
+  info.forEach((element) => {
+    let cont = 0;
+    Object.keys(element).map(function (key, index) {
+      dataset.push(key);
+      let json = { "title": key, "targets": cont }
+      titulos.push(json);
+      cont ++;
+    });
+
+  })
+  datos.push(dataset);
+  console.log(JSON.stringify(datos));
+   datos = [
+    { "Nombre del Personal": 43447, "Fecha_inicio": "sin-imagen.jpg", "Caducidad": "APORT","Telefono":980890890 },
+    { "Nombre del Personal": 43447, "Fecha_inicio": "NADA", "Caducidad": "NADA","Telefono":980890890 },
+]
+
+
+let columnas = [
+    { "data": "Nombre del Personal" },
+    { "data": "Fecha_inicio" },
+    { "data": "Caducidad" },
+    { "data": "Telefono" }
+];
+
+   tablaDatos = $('#example').DataTable({
+    "pageLength": "25",
+    "responsive": true,
+    "columns": columnas,
+    "columnDefs": titulos,
+    "data": datos
+});
+
 }

@@ -1,6 +1,10 @@
-export async function new_empresa(datos,empresa){
+export async function new_empresa(datos,empresa,img_preview){
  let option2 = 1;
+ let imagen = img_preview;
  let json = { ...datos,empresa,option2 };
+ let array = { ...datos,empresa,imagen,option2 };
+
+
 
    fetch('http://localhost/php/server.php', {
         method: 'POST',
@@ -8,7 +12,7 @@ export async function new_empresa(datos,empresa){
          'Accept': 'application/json',
          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(json) ,
+        body: JSON.stringify(array) ,
       }).then(function(res){
          console.log(res);
       }).then(function(data){
@@ -16,17 +20,20 @@ export async function new_empresa(datos,empresa){
         view_empresas();
      })
 }
-export async function nuevo_empleado_dacesa(empleado){
-   let option = 1;
-   let json = {nombre:empleado,option };
+export async function nuevo_empleado_dacesa(img_preview,empleado){
   
+   let array ={
+      option:1,
+      nombre:empleado,
+      imagen: img_preview
+   }
      fetch('http://localhost/php/server.php', {
           method: 'POST',
           headers: {
            'Accept': 'application/json',
            'Content-Type': 'application/json'
           },
-          body: JSON.stringify(json) ,
+          body: JSON.stringify(array) ,
         }).then(function(res){
            console.log(res);
         }).then(function(data){

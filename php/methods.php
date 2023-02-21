@@ -4,13 +4,13 @@ function getdata()
     $file = file_get_contents("../json/data.json");
     return $file;
 }
-function saveuser($nombre)
+function saveuser($nombre,$imagen)
 {
     $file = file_get_contents("../json/data.json");
     $users = json_decode($file, true);
     $array = array(
         "nombre" => $nombre,
-        "foto_" . $nombre => "..<",
+        "foto"=> $imagen,
 
     );
     array_push($users, $array);
@@ -26,7 +26,6 @@ function savempresa($empresa)
 
     $array = array(
         $empresa => [],
-        "foto_" . $empresa => "..<",
     );
     array_push($empresas, $array);
     $archive = fopen("../json/empresas.json", "w");
@@ -40,7 +39,7 @@ function savecamposmpresas($POST)
     $myObj = new stdClass();
 
     foreach ($POST as $x => $val) {
-        if ($x != "empresa" && $x != "option2") {
+        if ($x != "empresa" && $x != "option2" && $x != "imagen") {
             $myObj->$val = null;
         }
     }
@@ -49,7 +48,7 @@ function savecamposmpresas($POST)
         $POST["empresa"] => [
             $myObj
         ],
-        "foto_" . $POST["empresa"] => "..<",
+        "foto"  => $POST["imagen"],
     );
 
 
