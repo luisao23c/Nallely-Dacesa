@@ -1,5 +1,12 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Credentials: true');
+header('Access-Control-Allow-Methods: PUT, GET, POST, DELETE, OPTIONS');
+header("Access-Control-Allow-Headers: X-Requested-With");
+header('Content-Type: text/html; charset=utf-8');
+header('P3P: CP="IDC DSP COR CURa ADMa OUR IND PHY ONL COM STA"');
+
 include_once("./methods.php");
 
 
@@ -34,17 +41,15 @@ if(isset ($POST["option4"])){
 
         
         }
-        $empresas[$i][$x][] = array(
-         $myObj
-       );
+        $empresas[$i][$x][] = $myObj;
      }
     } 
 }
 $archive = fopen("../json/empresas.json", "w");
     fwrite($archive, json_encode($empresas));
     fclose($archive);
-}
-// aqui me quede devolver resultados
+}  
+// aqui me quede devolver
 if(isset ($POST["option5"])){
    $file = file_get_contents("../json/empresas.json");
     $empresas = json_decode($file, true);
@@ -53,7 +58,7 @@ if(isset ($POST["option5"])){
     for ($i = 0;  $i<$cont ;$i++){
      foreach ($empresas[$i] as  $x=>$val){
            if($x===$POST["empresa"]){
-           echo json_encode($empresas[$i][$x]);
+         echo  json_encode(["data" =>$empresas[$i][$x] ]);
      }
     } 
 }

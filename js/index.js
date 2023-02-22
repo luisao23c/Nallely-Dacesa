@@ -1,5 +1,10 @@
-import { new_empresa, view_empresas,nuevo_empleado_dacesa,view_empleados} from "./script.js";
-let tablaDatos =null;
+import {
+  new_empresa,
+  view_empresas,
+  nuevo_empleado_dacesa,
+  view_empleados,
+} from "./script.js";
+let tablaDatos = null;
 let json = [];
 let cont = 1;
 let div_card = null;
@@ -11,36 +16,32 @@ let container = document.getElementById("container");
 let cambio_text = document.getElementById("change");
 let img_preview = null;
 let div_load = document.getElementById("load");
-let table =document.createElement("table");
-table.id = "example";
-table.classList.add("display");
-table.style.width = "100%";
-async function mostrar(){
+
+async function mostrar() {
   var archivo = document.getElementById("file").files[0];
   var reader = new FileReader();
   if (file) {
-    reader.readAsDataURL(archivo );
+    reader.readAsDataURL(archivo);
     reader.onloadend = function () {
       document.getElementById("img").src = reader.result;
       img_preview = reader.result;
-    }
+    };
   }
 }
 cambio();
-async function cambio(){
-  if(tablaDatos !=null){
-
+async function cambio() {
+  if (tablaDatos != null) {
   }
   div_load.style.visibility = "visible";
   div_load.style.marginTop = "10rem";
-  div_load.style.marginLeft="35rem";
+  div_load.style.marginLeft = "35rem";
 
   document.getElementById("espacio").style.marginTop = "0rem";
-  selector ++;
-  if(selector ==2){
+  selector++;
+  if (selector == 2) {
     selector = 0;
   }
-  if(selector ==0){
+  if (selector == 0) {
     container.innerHTML = "";
     cambio_text.textContent = "Ver Empresas";
     cambio_text.style.fontWeight = "bold";
@@ -48,7 +49,7 @@ async function cambio(){
 
     refresh_empledos_view();
   }
-  if(selector ==1){
+  if (selector == 1) {
     container.innerHTML = "";
     cambio_text.textContent = "Ver Empleados";
     cambio_text.style.color = "blue";
@@ -57,10 +58,11 @@ async function cambio(){
 
     refresh_empresas_view();
   }
- 
 }
 
-cambio_text.addEventListener("click", (event) => {cambio();})
+cambio_text.addEventListener("click", (event) => {
+  cambio();
+});
 
 let nueva_empresa = document.getElementById("create_empresa");
 nueva_empresa.addEventListener("click", (event) => {
@@ -70,66 +72,58 @@ let nuevo_empleado = document.getElementById("create_empleado");
 nuevo_empleado.addEventListener("click", (event) => {
   create_empleado();
 });
- async function refresh_empledos_view() {
+async function refresh_empledos_view() {
   container.innerHTML = "";
   let empleados = await view_empleados();
-  empleados.forEach((element) => {
-    let conteo2 = 0;
-    
-    div_card = document.createElement("div");
-    div_card.classList.add("card");
-    div_card.style.width = "15rem";
-    div_card.style.marginLeft = "2.3rem";
-    div_card.style.marginTop = "1.5rem";
+  if (!empleados) {
+  } else {
+    empleados.forEach((element) => {
+      let conteo2 = 0;
 
-    div_card_img = document.createElement("img");
-    div_card_img.classList.add("card-img-top");
-    div_card_title = document.createElement("h5");
-    div_card_title.style.fontSize = "18px";
-    div_card_title.classList.add("card-title");
-    div_card_title.classList.add("text-center");
-    div_card_button = document.createElement("a");
-    div_card_button.classList.add("btn");
-    div_card_button.classList.add("btn-primary");
-    Object.keys(element).map(function (key,value) {
+      div_card = document.createElement("div");
+      div_card.classList.add("card");
+      div_card.style.width = "15rem";
+      div_card.style.marginLeft = "2.3rem";
+      div_card.style.marginTop = "1.5rem";
 
-      if (conteo2 === 0) {
-        div_card_title.textContent = element[key];
-      }
-      if (conteo2 === 1) {
-        div_card_img.src =
-        element[key];
-        div_card_button.text = "Previsualizar";
-        div_card.appendChild(div_card_img);
-        div_card.appendChild(div_card_title);
-        div_card.appendChild(div_card_button);
-        container.appendChild(div_card);
-      }
+      div_card_img = document.createElement("img");
+      div_card_img.classList.add("card-img-top");
+      div_card_title = document.createElement("h5");
+      div_card_title.style.fontSize = "18px";
+      div_card_title.classList.add("card-title");
+      div_card_title.classList.add("text-center");
+      div_card_button = document.createElement("a");
+      div_card_button.classList.add("btn");
+      div_card_button.classList.add("btn-primary");
+      Object.keys(element).map(function (key, value) {
+        if (conteo2 === 0) {
+          div_card_title.textContent = element[key];
+        }
+        if (conteo2 === 1) {
+          div_card_img.src = element[key];
+          div_card_button.text = "Previsualizar";
+          div_card.appendChild(div_card_img);
+          div_card.appendChild(div_card_title);
+          div_card.appendChild(div_card_button);
+          container.appendChild(div_card);
+        }
 
-      conteo2++;
+        conteo2++;
+      });
     });
-  });
-  div_load.style.visibility = "hidden";
-  div_load.style.width = "0px";
-  div_load.style.height = "0px";
-  div_load.style.marginTop = "0rem";
 
+    div_load.style.visibility = "hidden";
+    div_load.style.width = "0px";
+    div_load.style.height = "0px";
+    div_load.style.marginTop = "0rem";
+  }
 }
 
-
-
-
-
-
-
-
 export async function refresh_empresas_view() {
-  
   container.innerHTML = "";
   let empresas = await view_empresas();
   empresas.forEach((element) => {
-  
-    let id_empresas =0;
+    let id_empresas = 0;
     let conteo = 0;
     div_card = document.createElement("div");
     div_card.classList.add("card");
@@ -147,16 +141,15 @@ export async function refresh_empresas_view() {
     div_card_button.classList.add("btn");
     div_card_button.classList.add("btn-primary");
     Object.keys(element).map(function (key, index) {
-
       if (conteo === 0) {
         div_card_title.textContent = key;
-        div_card_button.setAttribute("data-info",JSON.stringify( element[key]));
-        div_card_button.onclick = function () {click_empresa(this)}
-        
-      
+        div_card_button.setAttribute("data-info", key);
+        div_card_button.onclick = function () {
+          click_empresa(this);
+        };
       }
       if (conteo === 1) {
-        div_card_img.src =element[key];
+        div_card_img.src = element[key];
         div_card_button.text = "Previsualizar";
         div_card.appendChild(div_card_img);
         div_card.appendChild(div_card_title);
@@ -171,7 +164,6 @@ export async function refresh_empresas_view() {
   div_load.style.width = "0px";
   div_load.style.height = "0px";
   div_load.style.marginTop = "0rem";
-
 }
 let div_inputs2 = document.createElement("div");
 let input_file2 = document.createElement("input");
@@ -179,9 +171,9 @@ input_file2.type = "file";
 input_file2.id = "file";
 input_file2.accept = "image/*";
 input_file2.classList.add("form-control");
-input_file2.onchange = function(){
-  mostrar()
-}
+input_file2.onchange = function () {
+  mostrar();
+};
 let br2 = document.createElement("br");
 let img2 = document.createElement("img");
 img2.id = "img";
@@ -234,7 +226,7 @@ button.addEventListener("click", (e) => {
 div.appendChild(button);
 div.appendChild(input);
 async function create_inputs(empresa) {
-  let datos_empresas = ["false","Nombre del Personal",];
+  let datos_empresas = ["false", "Nombre del Personal"];
   let pasa = 0;
   Swal.fire({
     title: "Que Campos solicitaras?",
@@ -246,43 +238,44 @@ async function create_inputs(empresa) {
       for (let i = 0; i < cont; i++) {
         let input = Swal.getPopup().querySelector("#campos-input" + i).value;
         datos_empresas.push(input);
-        pasa =0;
+        pasa = 0;
         if (!input) {
           Swal.showValidationMessage(`Por favor llene todos los campos`);
           pasa = 1;
-        }else{
-
-          
+        } else {
         }
       }
-     
-     if (pasa ===0) {
-      new_empresa(datos_empresas, empresa,img_preview);
-      div_card = document.createElement("div");
-      div_card.classList.add("card");
-      div_card.style.width = "15rem";
-      div_card.style.marginLeft = "2.3rem";
-      div_card.style.marginTop = "1.5rem";
-  
-      div_card_img = document.createElement("img");
-      div_card_img.classList.add("card-img-top");
-      div_card_title = document.createElement("h5");
-      div_card_title.style.fontSize = "18px";
-      div_card_title.classList.add("card-title");
-      div_card_title.classList.add("text-center");
-      div_card_button = document.createElement("a");
-      div_card_button.classList.add("btn");
-      div_card_button.classList.add("btn-primary");
-      div_card_title.textContent = empresa;
-      div_card_img.src =img_preview;
-    div_card_button.text = "Previsualizar";
-    div_card.appendChild(div_card_img);
-    div_card.appendChild(div_card_title);
-    div_card.appendChild(div_card_button);
-    if(selector ===1)
-    container.appendChild(div_card);
-    cont =1;
-     }
+
+      if (pasa === 0) {
+        new_empresa(datos_empresas, empresa, img_preview);
+        div_card = document.createElement("div");
+        div_card.classList.add("card");
+        div_card.style.width = "15rem";
+        div_card.style.marginLeft = "2.3rem";
+        div_card.style.marginTop = "1.5rem";
+
+        div_card_img = document.createElement("img");
+        div_card_img.classList.add("card-img-top");
+        div_card_title = document.createElement("h5");
+        div_card_title.style.fontSize = "18px";
+        div_card_title.classList.add("card-title");
+        div_card_title.classList.add("text-center");
+        div_card_button = document.createElement("a");
+        div_card_button.classList.add("btn");
+        div_card_button.classList.add("btn-primary");
+        div_card_button.setAttribute("data-info", empresa);
+        div_card_button.onclick = function () {
+          click_empresa(this);
+        };
+        div_card_title.textContent = empresa;
+        div_card_img.src = img_preview;
+        div_card_button.text = "Previsualizar";
+        div_card.appendChild(div_card_img);
+        div_card.appendChild(div_card_title);
+        div_card.appendChild(div_card_button);
+        if (selector === 1) container.appendChild(div_card);
+        cont = 1;
+      }
     },
   });
 }
@@ -303,9 +296,9 @@ input_file.type = "file";
 input_file.id = "file";
 input_file.accept = "image/*";
 input_file.classList.add("form-control");
-input_file.onchange = function(){
-  mostrar()
-}
+input_file.onchange = function () {
+  mostrar();
+};
 let br = document.createElement("br");
 let img = document.createElement("img");
 img.id = "img";
@@ -322,7 +315,7 @@ div_inputs.appendChild(br);
 div_inputs.appendChild(input_text);
 
 input_text.placeholder = "Nombre del empleado";
-async function create_empleado(){
+async function create_empleado() {
   Swal.fire({
     title: "Nuevo Empleado",
     html: div_inputs,
@@ -334,75 +327,83 @@ async function create_empleado(){
       if (!empleado) {
         Swal.showValidationMessage(`Por favor Ingresa un nombre `);
       } else {
-        nuevo_empleado_dacesa(String(img_preview),empleado);
+        nuevo_empleado_dacesa(String(img_preview), empleado);
         div_card = document.createElement("div");
-      div_card.classList.add("card");
-      div_card.style.width = "15rem";
-      div_card.style.marginLeft = "2.3rem";
-      div_card.style.marginTop = "1.5rem";
-  
-      div_card_img = document.createElement("img");
-      div_card_img.classList.add("card-img-top");
-      div_card_title = document.createElement("h5");
-      div_card_title.style.fontSize = "18px";
-      div_card_title.classList.add("card-title");
-      div_card_title.classList.add("text-center");
-      div_card_button = document.createElement("a");
-      div_card_button.classList.add("btn");
-      div_card_button.classList.add("btn-primary");
-      div_card_title.textContent = empleado;
-      div_card_img.src =img_preview; //key;
-    div_card_button.text = "Previsualizar";
-    div_card.appendChild(div_card_img);
-    div_card.appendChild(div_card_title);
-    div_card.appendChild(div_card_button);
-    if(selector ===0)
-    container.appendChild(div_card);
+        div_card.classList.add("card");
+        div_card.style.width = "15rem";
+        div_card.style.marginLeft = "2.3rem";
+        div_card.style.marginTop = "1.5rem";
+
+        div_card_img = document.createElement("img");
+        div_card_img.classList.add("card-img-top");
+        div_card_title = document.createElement("h5");
+        div_card_title.style.fontSize = "18px";
+        div_card_title.classList.add("card-title");
+        div_card_title.classList.add("text-center");
+        div_card_button = document.createElement("a");
+        div_card_button.classList.add("btn");
+        div_card_button.classList.add("btn-primary");
+        div_card_title.textContent = empleado;
+        div_card_img.src = img_preview; //key;
+        div_card_button.text = "Previsualizar";
+        div_card.appendChild(div_card_img);
+        div_card.appendChild(div_card_title);
+        div_card.appendChild(div_card_button);
+        if (selector === 0) container.appendChild(div_card);
       }
     },
   }).then((result) => {});
 }
-async function click_empresa(e){
-  if(tablaDatos !=null){
-    tablaDatos.clear().destroy();
-    tablaDatos = null;
-  }
+async function click_empresa(e) {
+  let table = document.createElement("table");
+  table.id = "example";
+  table.classList.add("display");
+  table.style.width = "100%";
+  let empresa = await e.getAttribute("data-info");
   document.getElementById("espacio").style.marginTop = "2rem";
   container.innerHTML = "";
   container.appendChild(table);
-  let info = e.getAttribute("data-info");
-  info = JSON.parse(info);
-  var dataset = [];
-  let datos = [];
-  let titulos = [];
-  let columnas = [];
-  info.forEach((element) => {
-    let cont = 0;
-    Object.keys(element).map(function (key, index) {
-      dataset.push(key);
-      let json = { "title": key, "targets": cont };
-      let json_columnas = { "data": key};
-      titulos.push(json);
-      columnas.push(json_columnas);
-      cont ++;
-    });
+  if (tablaDatos != null) {
+    tablaDatos.clear().destroy();
+    tablaDatos = null;
+  }
+  let array = {
+    option5: 1,
+    empresa: empresa,
+  };
+  fetch("http://localhost/php/server.php", {
+    method: "POST",
 
-  })
-  datos.push(dataset);
-  console.log(JSON.stringify(datos));
-   datos = [
-    { "Nombre del Personal": 43447, "Fecha_inicio": "sin-imagen.jpg", "Caducidad": "APORT","Telefono":980890890 },
-    { "Nombre del Personal": 43447, "Fecha_inicio": "NADA", "Caducidad": "NADA","Telefono":980890890 },
-]
-
-
-
-   tablaDatos = $('#example').DataTable({
-    "pageLength": "25",
-    "responsive": true,
-    "columns": columnas,
-    "columnDefs": titulos,
-    "data": datos
-});
-
+    body: JSON.stringify(array),
+  }).then((data) => {
+    return data
+      .json()
+      .then((data) => {
+        let titulos = [];
+        let columnas = [];
+        let cont = 0;
+        console.log(data.data);
+        data.data.forEach((element) => {
+          if (cont < 1) {
+            let conteo_p = 0;
+            Object.keys(element).map(function (key, index) {
+              let json = { title: key, targets: conteo_p };
+              let json_columnas = { data: key };
+              titulos.push(json);
+              columnas.push(json_columnas);
+              conteo_p++;
+            });
+          }
+          cont++;
+        });
+        tablaDatos = $("#example").DataTable({
+          pageLength: "25",
+          responsive: true,
+          columns: columnas,
+          columnDefs: titulos,
+          data: data.data,
+        });
+      })
+      .catch((err) => {});
+  });
 }
