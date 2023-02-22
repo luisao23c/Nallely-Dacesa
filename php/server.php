@@ -20,23 +20,42 @@ if(isset ($POST["option4"])){
     $empresas = json_decode($file, true);
     $myObj = new stdClass();
     $cont = count($empresas);
+    $array = array( );
     for ($i = 0;  $i<$cont ;$i++){
      foreach ($empresas[$i] as  $x=>$val){
            if($x===$POST["empresa"]){
             foreach ($POST as $d => $val2) {
 
                 if ($d != "empresa" && $d != "option4" && $d != "imagen") {
-                  $empresas[$i][$x][] = array(
-                        $d=> $val2
-                    );
+                        $myObj->$d = $val2;
+               
                 }
-        
+              
+
         
         }
+        $empresas[$i][$x][] = array(
+         $myObj
+       );
      }
     } 
 }
 $archive = fopen("../json/empresas.json", "w");
     fwrite($archive, json_encode($empresas));
     fclose($archive);
+}
+// aqui me quede devolver resultados
+if(isset ($POST["option5"])){
+   $file = file_get_contents("../json/empresas.json");
+    $empresas = json_decode($file, true);
+    $myObj = new stdClass();
+    $cont = count($empresas);
+    for ($i = 0;  $i<$cont ;$i++){
+     foreach ($empresas[$i] as  $x=>$val){
+           if($x===$POST["empresa"]){
+           echo json_encode($empresas[$i][$x]);
+     }
+    } 
+}
+
 }
