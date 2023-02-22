@@ -11,7 +11,10 @@ let container = document.getElementById("container");
 let cambio_text = document.getElementById("change");
 let img_preview = null;
 let div_load = document.getElementById("load");
-
+let table =document.createElement("table");
+table.id = "example";
+table.classList.add("display");
+table.style.width = "100%";
 async function mostrar(){
   var archivo = document.getElementById("file").files[0];
   var reader = new FileReader();
@@ -25,6 +28,9 @@ async function mostrar(){
 }
 cambio();
 async function cambio(){
+  if(tablaDatos !=null){
+
+  }
   div_load.style.visibility = "visible";
   div_load.style.marginTop = "10rem";
   div_load.style.marginLeft="35rem";
@@ -357,19 +363,27 @@ async function create_empleado(){
   }).then((result) => {});
 }
 async function click_empresa(e){
+  if(tablaDatos !=null){
+    tablaDatos.clear().destroy();
+    tablaDatos = null;
+  }
   document.getElementById("espacio").style.marginTop = "2rem";
   container.innerHTML = "";
+  container.appendChild(table);
   let info = e.getAttribute("data-info");
   info = JSON.parse(info);
   var dataset = [];
   let datos = [];
   let titulos = [];
+  let columnas = [];
   info.forEach((element) => {
     let cont = 0;
     Object.keys(element).map(function (key, index) {
       dataset.push(key);
-      let json = { "title": key, "targets": cont }
+      let json = { "title": key, "targets": cont };
+      let json_columnas = { "data": key};
       titulos.push(json);
+      columnas.push(json_columnas);
       cont ++;
     });
 
@@ -382,12 +396,6 @@ async function click_empresa(e){
 ]
 
 
-let columnas = [
-    { "data": "Nombre del Personal" },
-    { "data": "Fecha_inicio" },
-    { "data": "Caducidad" },
-    { "data": "Telefono" }
-];
 
    tablaDatos = $('#example').DataTable({
     "pageLength": "25",
