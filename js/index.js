@@ -355,6 +355,10 @@ async function create_empleado() {
   }).then((result) => {});
 }
 async function click_empresa(e) {
+  cambio_text.textContent = "Ver Empresas";
+  cambio_text.style.fontWeight = "bold";
+  cambio_text.style.color = "#023";
+  selector = 0;
   let table = document.createElement("table");
   table.id = "example";
   table.classList.add("display");
