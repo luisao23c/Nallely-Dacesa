@@ -6,7 +6,9 @@ import {
   add_empleado_empresa,
   new_campo_empresa as create_campo_empresa,
   update_campo_empresa as rename_campo_empresa,
-  delete_campo_empresa as remove_campo_empresa
+  delete_campo_empresa as remove_campo_empresa,
+  update_user_empresa,
+  delete_user_empresa,
 } from "./script.js";
 let titulos = [];
 let tablaDatos = null;
@@ -484,12 +486,70 @@ async function click_empresa(empresa) {
           data: datos,
           initComplete: function() {
             $(document).on("click", "button[role='editar']", function() {
-                var data = tablaDatos.row($(this).parents('tr')).data();
-                alert(JSON.stringify(data));
+              let obj ={
+                option10:1,
+                empresa:empresa,
+              };
+                let data = tablaDatos.row($(this).parents('tr')).data();
+                let div_update = document.createElement('div');
+                let cont_id=2;
+                let keys =[];
+                let cont_rules = 0;
+                Object.keys(data).map(function (element, index) {
+                  keys.push(element);
+                  obj[element] = data[element];
+                  if(cont_rules > 1){
+                    let p = document.createElement('p');
+                    p.textContent = element;
+                    p.classList.add('text-center');
+                    p.style.marginBottom = ".3rem";
+                    let div_input = document.createElement('input');
+                    div_input.type = 'text';
+                    div_input.value = data[element];
+                    div_input.classList.add('form-control');
+                    div_input.id = "element"+ cont_id;
+                    div_input.style.marginBottom = ".5rem";
+                    div_update.appendChild(p);
+                    div_update.appendChild(div_input);
+                    cont_id++;
+                  }
+                  cont_rules ++;
+                  
+              
+                });
+                 Swal.fire({
+                  
+                  title: "Actualizar Informacion",
+                  confirmButtonText: "Actualizar ",
+                  html: div_update,
+                  focusConfirm: false,
+                  showCloseButton: true,
+                  preConfirm: () => {
+                    let pasa = 0;
+                    for (let i = 2; i < cont_id; i++) {
+                      let input = Swal.getPopup().querySelector("#element" + i).value;
+                        obj[keys[i]] = input;
+                      if (!input) {
+                        pasa =1; 
+                        Swal.showValidationMessage(`Por favor llene todos los campos`);
+                      } else {
+                      }
+                    }
+                    
+                    if (pasa == 0) {
+                      update_user_empresa(obj);
+                      click_empresa(empresa);
+                    }
+                    
+                  },
+                });
+
+              
             });
             $(document).on("click", "button[role='eliminar']", function() {
               var data = tablaDatos.row($(this).parents('tr')).data();
-              alert(JSON.stringify(data));
+              delete_user_empresa(data["Nombre del Personal"],empresa);
+              click_empresa(empresa);
           });
         },
         });

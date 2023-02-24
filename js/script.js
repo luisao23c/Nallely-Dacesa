@@ -92,10 +92,7 @@ export async function view_empresas(){
            'Content-Type': 'application/json'
           },
           body: JSON.stringify(array) ,
-        }).then((response) => response.json())
-        .then((data)=>{
-          console.log(data);
-       })
+        })
   }
   
   export async function update_campo_empresa(after_campo,new_campo,empresa){
@@ -129,8 +126,32 @@ export async function view_empresas(){
            'Content-Type': 'application/json'
           },
           body: JSON.stringify(array) ,
-        }).then((response) => response.json())
-        .then((data)=>{
-          console.log(data);
-       })
+        })
+  }
+  export async function delete_user_empresa(user,empresa){
+
+   let array ={
+      option9:1,
+      empresa:empresa,
+   nombre:user
+         }
+     fetch('http://localhost/php/server.php', {
+          method: 'POST',
+          headers: {
+           'Accept': 'application/json',
+           'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(array) ,
+        })
+  }
+  export async function update_user_empresa(array){
+
+     fetch('http://localhost/php/server.php', {
+          method: 'POST',
+          headers: {
+           'Accept': 'application/json',
+           'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(array) ,
+        })
   }

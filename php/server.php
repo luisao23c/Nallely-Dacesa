@@ -76,3 +76,11 @@ if(isset ($POST["option8"])){
 
    delete_campos_empresa($POST);
 }
+if(isset ($POST["option9"])){
+
+   deleteuser($POST);
+}
+if(isset ($POST["option10"])){
+
+   updateuser($POST);
+}
