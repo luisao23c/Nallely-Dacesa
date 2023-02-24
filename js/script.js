@@ -65,3 +65,15 @@ export async function view_empresas(){
    });
 
   }
+
+  export async function add_empleado_empresa(array){
+  
+     fetch('http://localhost/php/server.php', {
+          method: 'POST',
+          headers: {
+           'Accept': 'application/json',
+           'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(array) ,
+        })
+  }

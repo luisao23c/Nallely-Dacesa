@@ -3,10 +3,12 @@ import {
   view_empresas,
   nuevo_empleado_dacesa,
   view_empleados,
+  add_empleado_empresa
 } from "./script.js";
+let titulos = [];
 let tablaDatos = null;
 let json = [];
-let cont = 1;
+let cont = 2;
 let div_card = null;
 let div_card_img = null;
 let div_card_title = null;
@@ -145,7 +147,7 @@ export async function refresh_empresas_view() {
         div_card_title.textContent = key;
         div_card_button.setAttribute("data-info", key);
         div_card_button.onclick = function () {
-          click_empresa(this);
+          click_empresa(key);
         };
       }
       if (conteo === 1) {
@@ -220,14 +222,20 @@ let button = document.createElement("button");
 button.classList.add("btn");
 button.classList.add("btn-danger");
 button.textContent = "Nuevos Campos";
+let date = document.createElement("input");
+date.classList.add("form-control");
+date.value = "Fecha de Induccion";
+date.disabled = true;
+date.id = "campos-input1";
+date.style.marginTop =".5rem";
 button.addEventListener("click", (e) => {
   new_inputs();
 });
 div.appendChild(button);
 div.appendChild(input);
+div.appendChild(date);
 async function create_inputs(empresa) {
-  let datos_empresas = ["false", "Nombre del Personal"];
-  let pasa = 0;
+  let datos_empresas = ["false", "Nombre del Personal","Fecha de Induccion"];
   Swal.fire({
     title: "Que Campos solicitaras?",
     confirmButtonText: "Registrar",
@@ -235,10 +243,10 @@ async function create_inputs(empresa) {
     focusConfirm: false,
     showCloseButton: true,
     preConfirm: () => {
+      let pasa = 0;
       for (let i = 0; i < cont; i++) {
         let input = Swal.getPopup().querySelector("#campos-input" + i).value;
         datos_empresas.push(input);
-        pasa = 0;
         if (!input) {
           Swal.showValidationMessage(`Por favor llene todos los campos`);
           pasa = 1;
@@ -265,7 +273,7 @@ async function create_inputs(empresa) {
         div_card_button.classList.add("btn-primary");
         div_card_button.setAttribute("data-info", empresa);
         div_card_button.onclick = function () {
-          click_empresa(this);
+          click_empresa(empresa);
         };
         div_card_title.textContent = empresa;
         div_card_img.src = img_preview;
@@ -354,18 +362,92 @@ async function create_empleado() {
     },
   }).then((result) => {});
 }
-async function click_empresa(e) {
+async function click_empresa(empresa) {
+  console.log("aqui es " + empresa);
+  titulos = [];
+  let title  = [];
   cambio_text.textContent = "Ver Empresas";
   cambio_text.style.fontWeight = "bold";
   cambio_text.style.color = "#023";
   selector = 0;
+  let button = document.createElement("button");
+  button.textContent= "Agregar";
+  button.classList.add("btn");
+  button.classList.add("btn-primary");
   let table = document.createElement("table");
   table.id = "example";
   table.classList.add("display");
   table.style.width = "100%";
-  let empresa = await e.getAttribute("data-info");
   document.getElementById("espacio").style.marginTop = "2rem";
   container.innerHTML = "";
+  container.appendChild(button);
+  container.appendChild(table);
+  if (tablaDatos != null) {
+    tablaDatos.clear().destroy();
+    tablaDatos = null;
+  }
+  let array = {
+    option5: 1,
+    empresa: empresa,
+  };
+  fetch("http://localhost/php/server.php", {
+    method: "POST",
+
+    body: JSON.stringify(array),
+  }).then((data) => {
+    return data.json().then((data) => {
+      let columnas = [];
+        let cont = 0;
+        data.data.forEach((element) => {
+          if (cont < 1) {
+            let conteo_p = 0;
+            Object.keys(element).map(function (key, index) {
+              let json = { title: key, targets: conteo_p };
+              let json_title = key;
+              let json_columnas = { data: key };
+              titulos.push(json);
+              title.push(json_title);
+              columnas.push(json_columnas);
+              conteo_p++; 
+            });
+          }
+          console.log(columnas);
+          cont++;
+          button.onclick = function() {
+            new_campo(title,empresa);
+          };
+        });
+
+        tablaDatos = $("#example").DataTable({
+          pageLength: "25",
+          responsive: true,
+          columns: columnas,
+          columnDefs: titulos,
+          data: data.data,
+        });
+      })
+      .catch((err) => {});
+  });
+}
+
+async function click2_empresa(empresa) {
+  titulos = [];
+  let title  = [];
+  cambio_text.textContent = "Ver Empresas";
+  cambio_text.style.fontWeight = "bold";
+  cambio_text.style.color = "#023";
+  selector = 0;
+  let button = document.createElement("button");
+  button.textContent= "Agregar";
+  button.classList.add("btn");
+  button.classList.add("btn-primary");
+  let table = document.createElement("table");
+  table.id = "example";
+  table.classList.add("display");
+  table.style.width = "100%";
+  document.getElementById("espacio").style.marginTop = "2rem";
+  container.innerHTML = "";
+  container.appendChild(button);
   container.appendChild(table);
   if (tablaDatos != null) {
     tablaDatos.clear().destroy();
@@ -383,31 +465,136 @@ async function click_empresa(e) {
     return data
       .json()
       .then((data) => {
-        let titulos = [];
         let columnas = [];
         let cont = 0;
-        console.log(data.data);
         data.data.forEach((element) => {
           if (cont < 1) {
             let conteo_p = 0;
             Object.keys(element).map(function (key, index) {
               let json = { title: key, targets: conteo_p };
+              let json_title = key;
               let json_columnas = { data: key };
               titulos.push(json);
+              title.push(json_title);
               columnas.push(json_columnas);
               conteo_p++;
             });
           }
           cont++;
+          button.onclick = function() {
+            new_campo(title,empresa);
+          };
         });
+
         tablaDatos = $("#example").DataTable({
           pageLength: "25",
           responsive: true,
           columns: columnas,
           columnDefs: titulos,
           data: data.data,
+          buttons: [
+            'copyHtml5',
+            'excelHtml5',
+            'csvHtml5',
+            'pdfHtml5'
+        ]
         });
       })
       .catch((err) => {});
+  });
+}
+
+
+export  async function new_campo(title,empresa) {
+  let empleados =  await view_empleados();
+  console.log(JSON.stringify(empleados));
+  let div = document.createElement("div");
+ let array_inputs =[];
+ let cont = 0;
+ let obj = { 
+  };
+  let diferenciar_input =0;
+  title.forEach((element) => {
+    if(diferenciar_input == 0){
+      let br = document.createElement("br");
+      let select = document.createElement("select");
+    select.classList.add("form-select");
+    let p = document.createElement("p");
+    p.classList.add("text-left");
+    p.textContent = "Nombre del personal";
+    select.id = "id"+ cont;
+      empleados.forEach((empleado) => {
+        let cont_nombre =0;
+        Object.keys(empleado).map(function (key, value) {
+          if(cont_nombre == 0){
+            let option = document.createElement("option");
+            option.value = empleado[key];
+            option.textContent =empleado[key];
+            select.appendChild(option);
+            cont_nombre = 1;
+          }else{cont_nombre = 0}
+         
+      })
+      });
+      div.appendChild(p);
+    div.appendChild(select);
+    cont ++; 
+  }
+  else  if(diferenciar_input == 1){
+    let br = document.createElement("br");
+    let input_date = document.createElement("input");
+    let p = document.createElement("p");
+    p.classList.add("text-right");
+    p.textContent = "Fecha de Induccion";
+    input_date.type = "date";
+    input_date.style.width = "450px";
+    input_date.style.height = "40px";
+    input_date.id = "id"+ cont;
+    input_date.style.marginBottom ="1.4rem";
+    div.appendChild(br);
+    div.appendChild(p);
+    div.appendChild(input_date);
+
+  cont ++; 
+}
+    else {
+      let br = document.createElement("br");
+    let input = document.createElement("input");
+    input.type = "text";
+    input.classList.add("form-control");
+    input.placeholder = "ingresa el "+ element;
+    input.id = "id"+ cont;
+    cont ++;
+    div.appendChild(input);
+    div.appendChild(br);
+    }
+    diferenciar_input ++;
+  });
+  Swal.fire({
+    
+    title: "Nuevo empleado que tomara el curso",
+    confirmButtonText: "Registrar",
+    html: div,
+    focusConfirm: false,
+    showCloseButton: true,
+    preConfirm: () => {
+      let pasa = 0;
+      for (let i = 0; i < cont; i++) {
+        let input = Swal.getPopup().querySelector("#id" + i).value;
+          obj[title[i]] = input;
+        if (!input) {
+          pasa =1; 
+          Swal.showValidationMessage(`Por favor llene todos los campos`);
+        } else {
+        }
+      }
+      obj["empresa"] = empresa;
+      obj["option4"] = 1;
+      if (pasa == 0) {
+         add_empleado_empresa(obj);
+        click2_empresa(empresa);
+      }
+      
+    },
   });
 }
