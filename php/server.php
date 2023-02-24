@@ -64,3 +64,15 @@ if(isset ($POST["option5"])){
 }
 
 }
+if(isset ($POST["option6"])){
+
+update_empresa_campos($POST);
+}
+if(isset ($POST["option7"])){
+
+   new_campos_empresa($POST);
+}
+if(isset ($POST["option8"])){
+
+   delete_campos_empresa($POST);
+}

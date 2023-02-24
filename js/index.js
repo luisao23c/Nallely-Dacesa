@@ -3,7 +3,10 @@ import {
   view_empresas,
   nuevo_empleado_dacesa,
   view_empleados,
-  add_empleado_empresa
+  add_empleado_empresa,
+  new_campo_empresa as create_campo_empresa,
+  update_campo_empresa as rename_campo_empresa,
+  delete_campo_empresa as remove_campo_empresa
 } from "./script.js";
 let titulos = [];
 let tablaDatos = null;
@@ -363,24 +366,61 @@ async function create_empleado() {
   }).then((result) => {});
 }
 async function click_empresa(empresa) {
-  console.log("aqui es " + empresa);
+  let Nombres = [];
   titulos = [];
   let title  = [];
+  let datos = [];
   cambio_text.textContent = "Ver Empresas";
   cambio_text.style.fontWeight = "bold";
   cambio_text.style.color = "#023";
   selector = 0;
+  let div_row = document.createElement("div");
+  div_row.classList.add("row");
+  let col_1 = document.createElement("div");
+  let col_2 = document.createElement("div");
+  let col_3 = document.createElement("div");
+  let col_4 = document.createElement("div");
+  col_1.classList.add("offset-2");
+  col_1.classList.add("col-2");
+  col_2.classList.add("col-2");
+  col_3.classList.add("col-2");
+  col_4.classList.add("col-2");
+  let button_remove = document.createElement("button");
+  let button_add = document.createElement("button");
+  let button_update = document.createElement("button");
   let button = document.createElement("button");
+  button_remove.classList.add("btn");
+  button_remove.classList.add("btn-danger");
+  button_add.classList.add("btn");
+  button_add.classList.add("btn-info");
+  button_add.onclick = function() {
+    new_campo_empresa(empresa);
+  }
+  button_update.classList.add("btn");
+  button_update.classList.add("btn-warning");
+ 
+  button_remove.textContent = "Elminar Campo";
+  button_add.textContent = "Agregar Campo";
+  button_update.textContent = "Actualizar Campo";
   button.textContent= "Agregar";
   button.classList.add("btn");
-  button.classList.add("btn-primary");
+  button.classList.add("btn-info");
+  col_1.appendChild(button_add);
+  col_2.appendChild(button_update);
+  col_3.appendChild(button_remove);
+  col_4.appendChild(button);
+  div_row.appendChild(col_1);
+  div_row.appendChild(col_2);
+  div_row.appendChild(col_3);
+  div_row.appendChild(col_4);
+  div_row.style.marginBottom = "1rem";
   let table = document.createElement("table");
   table.id = "example";
   table.classList.add("display");
   table.style.width = "100%";
   document.getElementById("espacio").style.marginTop = "2rem";
   container.innerHTML = "";
-  container.appendChild(button);
+  container.appendChild(div_row);
   container.appendChild(table);
   if (tablaDatos != null) {
     tablaDatos.clear().destroy();
@@ -410,94 +450,48 @@ async function click_empresa(empresa) {
               columnas.push(json_columnas);
               conteo_p++; 
             });
+            let json = { title: "Acciones", targets: conteo_p };
+            let json_columnas = {"render": function () {
+              return '<button type="button" role="editar" id="ButtonEditar" class="editar edit-modal btn btn-warning botonEditar"><span class="fa fa-edit"></span><span class="hidden-xs"> Editar</span></button> <button type="button" id="ButtonEditar" role="eliminar" class="editar edit-modal btn btn-danger botonEditar"><span class="fa fa-edit"></span><span class="hidden-xs"> Eliminar</span></button>';
+          }};
+          titulos.push(json);
+          columnas.push(json_columnas);
           }
+          if(cont>0){
+            Nombres.push(element["Nombre del Personal"]);
+            datos.push(element);
+          }
+
           console.log(columnas);
           cont++;
           button.onclick = function() {
-            new_campo(title,empresa);
+            new_campo(title,empresa,Nombres);
           };
         });
+        button_update.onclick = function(){
+          update_campo_empresa (title,empresa);
+        };
+        button_remove.onclick = function(){
+          delete_campo_empresa(title,empresa);
+        };
+
 
         tablaDatos = $("#example").DataTable({
           pageLength: "25",
           responsive: true,
           columns: columnas,
           columnDefs: titulos,
-          data: data.data,
-        });
-      })
-      .catch((err) => {});
-  });
-}
-
-async function click2_empresa(empresa) {
-  titulos = [];
-  let title  = [];
-  cambio_text.textContent = "Ver Empresas";
-  cambio_text.style.fontWeight = "bold";
-  cambio_text.style.color = "#023";
-  selector = 0;
-  let button = document.createElement("button");
-  button.textContent= "Agregar";
-  button.classList.add("btn");
-  button.classList.add("btn-primary");
-  let table = document.createElement("table");
-  table.id = "example";
-  table.classList.add("display");
-  table.style.width = "100%";
-  document.getElementById("espacio").style.marginTop = "2rem";
-  container.innerHTML = "";
-  container.appendChild(button);
-  container.appendChild(table);
-  if (tablaDatos != null) {
-    tablaDatos.clear().destroy();
-    tablaDatos = null;
-  }
-  let array = {
-    option5: 1,
-    empresa: empresa,
-  };
-  fetch("http://localhost/php/server.php", {
-    method: "POST",
-
-    body: JSON.stringify(array),
-  }).then((data) => {
-    return data
-      .json()
-      .then((data) => {
-        let columnas = [];
-        let cont = 0;
-        data.data.forEach((element) => {
-          if (cont < 1) {
-            let conteo_p = 0;
-            Object.keys(element).map(function (key, index) {
-              let json = { title: key, targets: conteo_p };
-              let json_title = key;
-              let json_columnas = { data: key };
-              titulos.push(json);
-              title.push(json_title);
-              columnas.push(json_columnas);
-              conteo_p++;
+          data: datos,
+          initComplete: function() {
+            $(document).on("click", "button[role='editar']", function() {
+                var data = tablaDatos.row($(this).parents('tr')).data();
+                alert(JSON.stringify(data));
             });
-          }
-          cont++;
-          button.onclick = function() {
-            new_campo(title,empresa);
-          };
-        });
-
-        tablaDatos = $("#example").DataTable({
-          pageLength: "25",
-          responsive: true,
-          columns: columnas,
-          columnDefs: titulos,
-          data: data.data,
-          buttons: [
-            'copyHtml5',
-            'excelHtml5',
-            'csvHtml5',
-            'pdfHtml5'
-        ]
+            $(document).on("click", "button[role='eliminar']", function() {
+              var data = tablaDatos.row($(this).parents('tr')).data();
+              alert(JSON.stringify(data));
+          });
+        },
         });
       })
       .catch((err) => {});
@@ -505,7 +499,9 @@ async function click2_empresa(empresa) {
 }
 
 
-export  async function new_campo(title,empresa) {
+
+
+export  async function new_campo(title,empresa,Nombres) {
   let empleados =  await view_empleados();
   console.log(JSON.stringify(empleados));
   let div = document.createElement("div");
@@ -526,11 +522,20 @@ export  async function new_campo(title,empresa) {
       empleados.forEach((empleado) => {
         let cont_nombre =0;
         Object.keys(empleado).map(function (key, value) {
+          let pasa = 0;
           if(cont_nombre == 0){
-            let option = document.createElement("option");
-            option.value = empleado[key];
-            option.textContent =empleado[key];
-            select.appendChild(option);
+            Nombres.forEach((nombre) => {
+                if(empleado[key] == nombre){
+                  pasa = 1;
+                }
+            })
+         
+             if (pasa == 0){
+              let option = document.createElement("option");
+              option.value = empleado[key];
+              option.textContent =empleado[key];
+              select.appendChild(option);
+            }
             cont_nombre = 1;
           }else{cont_nombre = 0}
          
@@ -592,9 +597,114 @@ export  async function new_campo(title,empresa) {
       obj["option4"] = 1;
       if (pasa == 0) {
          add_empleado_empresa(obj);
-        click2_empresa(empresa);
+        click_empresa(empresa);
       }
       
     },
+  });
+}
+
+async function new_campo_empresa (empresa){
+  Swal.fire({
+    
+    title: "Nuevo Campo en la tabla",
+    confirmButtonText: "Agregar",
+    html: '<input type="text" id="nuevo_campo" class="form-control" placeholder="Ingresa el Nuevo Campo">',
+    focusConfirm: false,
+    showCloseButton: true,
+    preConfirm: () => {
+        let nuevo_campo = Swal.getPopup().querySelector("#nuevo_campo").value;
+        if (!nuevo_campo) {
+          Swal.showValidationMessage(`Por favor Ingresa el NuevoCampo`);
+        } else {
+          create_campo_empresa(nuevo_campo,empresa);
+          click_empresa(empresa);
+        }
+      }
+  });
+}
+async function update_campo_empresa (titulos,empresa){
+  let div = document.createElement("div");
+  let selected = document.createElement("select");
+  selected.id = "campo";
+  let cont_campos =0;
+   titulos.forEach(titulo => {
+    if(cont_campos >1){
+      let option = document.createElement("option");
+      option.value = titulo;
+      option.textContent = titulo;
+      selected.appendChild(option);
+    }
+    cont_campos ++;
+   })
+  let input = document.createElement("input");
+  input.type = "text";
+  input.id = "nuevo_campo";
+  input.placeholder = "Ingresa el Nuevo Campo";
+  input.classList.add("form-control");
+  let p = document.createElement("p");
+  p.textContent = "Campo a Remplazar";
+  selected.classList.add("form-control");
+  selected.style.marginBottom = ".5rem";
+  div.appendChild(p);
+  div.appendChild(selected);
+  div.appendChild(input);
+  Swal.fire({
+    
+    title: "Actualizar Campo",
+    confirmButtonText: "Agregar",
+    html: div,
+    focusConfirm: false,
+    showCloseButton: true,
+    preConfirm: () => {
+      let campo = Swal.getPopup().querySelector("#campo").value;
+        let nuevo_campo = Swal.getPopup().querySelector("#nuevo_campo").value;
+        if (!nuevo_campo || !campo) {
+          Swal.showValidationMessage(`Por favor Ingresa el NuevoCampo`);
+        } else {
+          rename_campo_empresa(campo,nuevo_campo,empresa);
+          click_empresa(empresa);
+        }
+      }
+  });
+}
+
+async function delete_campo_empresa (titulos,empresa){
+  let div = document.createElement("div");
+  let selected = document.createElement("select");
+  selected.id = "campo";
+  let cont_campos =0;
+   titulos.forEach(titulo => {
+    if(cont_campos >1){
+      let option = document.createElement("option");
+      option.value = titulo;
+      option.textContent = titulo;
+      selected.appendChild(option);
+    }
+    cont_campos ++;
+   })
+
+  let p = document.createElement("p");
+  p.textContent = "Campo a Eliminar";
+  selected.classList.add("form-control");
+  selected.style.marginBottom = ".5rem";
+  div.appendChild(p);
+  div.appendChild(selected);
+  Swal.fire({
+    
+    title: "Campo a Eliminar",
+    confirmButtonText: "Eliminar",
+    html: div,
+    focusConfirm: false,
+    showCloseButton: true,
+    preConfirm: () => {
+      let campo = Swal.getPopup().querySelector("#campo").value;
+        if (!campo) {
+          Swal.showValidationMessage(`Seleccion un Campo`);
+        } else {
+          remove_campo_empresa(campo,empresa);
+          click_empresa(empresa);
+          }
+      }
   });
 }

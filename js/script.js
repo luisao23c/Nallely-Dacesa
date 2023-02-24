@@ -77,3 +77,60 @@ export async function view_empresas(){
           body: JSON.stringify(array) ,
         })
   }
+
+  export async function new_campo_empresa(new_campo,empresa){
+   
+   let array ={
+      option7:1,
+      empresa :empresa,
+      campo:new_campo,
+   }
+     fetch('http://localhost/php/server.php', {
+          method: 'POST',
+          headers: {
+           'Accept': 'application/json',
+           'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(array) ,
+        }).then((response) => response.json())
+        .then((data)=>{
+          console.log(data);
+       })
+  }
+  
+  export async function update_campo_empresa(after_campo,new_campo,empresa){
+
+   let array ={
+      option6:1,
+      empresa :empresa,
+      campo:after_campo,
+      nuevo: new_campo
+   }
+     fetch('http://localhost/php/server.php', {
+          method: 'POST',
+          headers: {
+           'Accept': 'application/json',
+           'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(array) ,
+       })
+  }
+  export async function delete_campo_empresa(delete_campo,empresa){
+
+   let array ={
+      option8:1,
+      empresa:empresa,
+      campo:delete_campo,
+   }
+     fetch('http://localhost/php/server.php', {
+          method: 'POST',
+          headers: {
+           'Accept': 'application/json',
+           'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(array) ,
+        }).then((response) => response.json())
+        .then((data)=>{
+          console.log(data);
+       })
+  }

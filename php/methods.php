@@ -59,9 +59,88 @@ function savecamposmpresas($POST)
     fwrite($archive, json_encode($empresas));
     fclose($archive);
 }
+function update_empresa_campos($POST){
+    $file = file_get_contents("../json/empresas.json");
+    $empresas = json_decode($file, true);
+    $myObj = new stdClass();
+    $cont = count($empresas);
+    foreach ($POST as $x => $val) {
+        if ($x != "empresa" && $x != "option6" && $x != "imagen") {
+            $myObj->$val = null;
+        }
+    }
+    for ($i = 0;  $i<$cont ;$i++){
+        foreach ($empresas[$i] as  $x=>$val){
+              if($x===$POST["empresa"]){
+                for ($d = 0;  $d< count($empresas[$i][$x]) ;$d++){
+                    $empresas[$i][$x][$d][$POST["nuevo"]] = $empresas[$i][$x][$d][$POST["campo"]];
+                    unset( $empresas[$i][$x][$d][$POST["campo"]]);
+
+         
+
+        }
+       } 
+   }
 
 
+}
+$archive = fopen("../json/empresas.json", "w");
+    fwrite($archive, json_encode($empresas));
+    fclose($archive);
+}
 
+function delete_campos_empresa($POST){
+    $file = file_get_contents("../json/empresas.json");
+    $empresas = json_decode($file, true);
+    $myObj = new stdClass();
+    $cont = count($empresas);
+    foreach ($POST as $x => $val) {
+        if ($x != "empresa" && $x != "option6" && $x != "imagen") {
+            $myObj->$val = null;
+        }
+    }
+    for ($i = 0;  $i<$cont ;$i++){
+        foreach ($empresas[$i] as  $x=>$val){
+              if($x===$POST["empresa"]){
+                for ($d = 0;  $d< count($empresas[$i][$x]) ;$d++){
+                    unset( $empresas[$i][$x][$d][$POST["campo"]]);
+
+
+         
+
+        }
+       } 
+   }
+
+
+}
+$archive = fopen("../json/empresas.json", "w");
+    fwrite($archive, json_encode($empresas));
+    fclose($archive);
+}
+function new_campos_empresa($POST){
+    $file = file_get_contents("../json/empresas.json");
+    $empresas = json_decode($file, true);
+    $cont = count($empresas);
+    for ($i = 0;  $i<$cont ;$i++){
+        foreach ($empresas[$i] as  $x=>$val){
+              if($x===$POST["empresa"]){
+                for ($d = 0;  $d< count($empresas[$i][$x]) ;$d++){
+                    $empresas[$i][$x][$d][$POST["campo"]] = null;
+                    
+
+         
+
+        }
+       } 
+   }
+
+
+}
+$archive = fopen("../json/empresas.json", "w");
+    fwrite($archive, json_encode($empresas));
+    fclose($archive);
+}
 function getusers()
 {
 }
