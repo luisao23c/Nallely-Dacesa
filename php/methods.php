@@ -6,11 +6,16 @@ function getdata()
 }
 function saveuser($nombre, $imagen)
 {
+    if(!file_exists("empleados")){
+        mkdir("empleados",0777);
+    }
+    move_uploaded_file($_FILES["file"]["tmp_name"],"empleados/".$_FILES["file"]["name"]);
+
     $file = file_get_contents("../json/data.json");
     $users = json_decode($file, true);
     $array = array(
         "nombre" => $nombre,
-        "foto" => $imagen,
+        "foto" => "../php/empleados/".$_FILES["file"]["name"],
 
     );
     array_push($users, $array);
@@ -33,11 +38,15 @@ function savempresa($empresa)
     fclose($archive);
 }
 function savecamposmpresas($POST)
-{
+{ if(!file_exists("empresas")){
+    mkdir("empresas",0777);
+}
+move_uploaded_file($_FILES["file"]["tmp_name"],"empresas/".$_FILES["file"]["name"]);
+
     $file = file_get_contents("../json/empresas.json");
     $empresas = json_decode($file, true);
     $myObj = new stdClass();
-
+    
     foreach ($POST as $x => $val) {
         if ($x != "empresa" && $x != "option2" && $x != "imagen" && $val != "") {
             $myObj->$val = null;
@@ -48,12 +57,12 @@ function savecamposmpresas($POST)
         $POST["empresa"] => [
             $myObj
         ],
-        "foto"  => $POST["imagen"],
+        "foto" => "../php/empresas/".$_FILES["file"]["name"],
     );
 
 
 
-
+    
 
     $archive = fopen("../json/empresas.json", "w");
     fwrite($archive, json_encode($empresas));

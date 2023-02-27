@@ -10,6 +10,9 @@ import {
   update_user_empresa,
   delete_user_empresa,
 } from "./script.js";
+let total = 0;
+let empleado_empresas = [];
+
 let titulos = [];
 let tablaDatos = null;
 let json = [];
@@ -23,15 +26,19 @@ let container = document.getElementById("container");
 let cambio_text = document.getElementById("change");
 let img_preview = null;
 let div_load = document.getElementById("load");
-
+let archivo = null;
+let foto_empresa = null;
+let empresa_tabla = null;
 async function mostrar() {
-  var archivo = document.getElementById("file").files[0];
+   archivo = document.getElementById("file").files[0];
+   foto_empresa = $("#file").prop("files")[0];
   var reader = new FileReader();
   if (file) {
     reader.readAsDataURL(archivo);
     reader.onloadend = function () {
       document.getElementById("img").src = reader.result;
       img_preview = reader.result;
+  
     };
   }
 }
@@ -102,9 +109,13 @@ async function refresh_empledos_view() {
       div_card_button = document.createElement("a");
       div_card_button.classList.add("btn");
       div_card_button.classList.add("btn-primary");
+   
       Object.keys(element).map(function (key, value) {
         if (conteo2 === 0) {
           div_card_title.textContent = element[key];
+          div_card_button.onclick = function() {
+            search_user(element[key])
+          }
         }
         if (conteo2 === 1) {
           div_card_img.src = element[key];
@@ -124,6 +135,90 @@ async function refresh_empledos_view() {
     div_load.style.height = "0px";
     div_load.style.marginTop = "0rem";
   }
+}
+export async function search_user(empleado){
+  empleado_empresas =[];
+  container.innerHTML ="";
+  let buscador = 0;
+  let empresas = await view_empresas();
+  empresas.forEach((element) => {
+    let cont = 0;
+    Object.keys(element).map(function (key, index) {
+      if(cont == 0){
+         element[key].forEach((elements) =>{
+          
+          if(elements["Nombre del Personal"] == empleado){
+            empleado_empresas.push(key);
+            
+
+          }
+         })
+      }
+      cont ++;
+
+    })
+  });
+  let div_row = document.createElement("div");
+  div_row.classList.add("row");
+  let col_1 = document.createElement("div");
+  let col_2 = document.createElement("div");
+  col_1.classList.add("col-4");
+  col_2.classList.add("col-4");
+  div_row.appendChild(col_1);
+  div_row.appendChild(col_2);
+  container.appendChild(div_row);
+  div_card = document.createElement("div");
+  div_card.classList.add("card");
+  div_card.style.width = "15rem";
+  div_card.style.marginLeft = "2.3rem";
+  div_card.style.marginTop = "1.5rem";
+
+  div_card_img = document.createElement("img");
+  div_card_img.classList.add("card-img-top");
+  div_card_title = document.createElement("h5");
+  div_card_title.style.fontSize = "18px";
+  div_card_title.classList.add("card-title");
+  div_card_title.classList.add("text-center");
+  
+  div_card_title.textContent = empleado;
+  div_card_img.src ="";
+  div_card.appendChild(div_card_img);
+  div_card.appendChild(div_card_title);
+  col_1.appendChild(div_card);
+  let empleados = await view_empleados();
+  empleados.forEach((element) => {
+    Object.keys(element).map(function (key, index) {
+        if(element[key] == empleado)
+         div_card_img.src =element["foto"];
+
+
+    })
+  });
+  let ul = document.createElement("ul");
+  ul.style.marginTop = "3rem";
+  ul.classList.add("list-group");
+  let title = document.createElement("il");
+  title.textContent = "Cursos tomados";
+  title.classList.add("list-group-item");
+  title.style.fontSize = "bold";
+  title.style.color = "#black";
+  ul.appendChild(title);
+
+
+  
+  empleado_empresas.forEach((element )=> {
+   let il = document.createElement("il");
+   il.classList.add("list-group-item");
+   il.textContent = element;
+   ul.appendChild(il);
+    
+  })
+  col_2.appendChild(ul);
+  cambio_text.textContent = "Ver Empleados";
+  cambio_text.style.color = "blue";
+
+  cambio_text.style.fontWeight = "bold";
+  selector =1;
 }
 
 export async function refresh_empresas_view() {
@@ -172,6 +267,9 @@ export async function refresh_empresas_view() {
   div_load.style.height = "0px";
   div_load.style.marginTop = "0rem";
 }
+let form2 = document.createElement("form");
+form2.setAttribute("enctype", "multipart/form-data");
+form2.id ="foto";
 let div_inputs2 = document.createElement("div");
 let input_file2 = document.createElement("input");
 input_file2.type = "file";
@@ -190,12 +288,12 @@ input_text2.type = "text";
 input_text2.id = "name";
 input_text2.classList.add("swal2-input");
 input_text2.placeholder = "Nombre della empresa";
-div_inputs2.appendChild(input_file2);
+form2.appendChild(input_file2);
+div_inputs2.appendChild(form2);
 div_inputs2.appendChild(br2);
 div_inputs2.appendChild(img2);
 div_inputs2.appendChild(br2);
 div_inputs2.appendChild(input_text2);
-
 async function create_empresa() {
   let empresa = null;
   Swal.fire({
@@ -240,7 +338,7 @@ div.appendChild(button);
 div.appendChild(input);
 div.appendChild(date);
 async function create_inputs(empresa) {
-  let datos_empresas = ["false", "Nombre del Personal","Fecha de Induccion"];
+  let datos_empresas = [];
   Swal.fire({
     title: "Que Campos solicitaras?",
     confirmButtonText: "Registrar",
@@ -260,7 +358,17 @@ async function create_inputs(empresa) {
       }
 
       if (pasa === 0) {
-        new_empresa(datos_empresas, empresa, img_preview);
+         let form_data = new FormData();
+         datos_empresas.forEach((element) => {
+          form_data.append(element, element);
+
+        });
+         form_data.append("file", foto_empresa);
+         form_data.append("empresa",empresa);
+         form_data.append("option2",1);
+        
+          new_empresa(form_data);
+
         div_card = document.createElement("div");
         div_card.classList.add("card");
         div_card.style.width = "15rem";
@@ -288,6 +396,7 @@ async function create_inputs(empresa) {
         div_card.appendChild(div_card_button);
         if (selector === 1) container.appendChild(div_card);
         cont = 1;
+        
       }
     },
   });
@@ -303,6 +412,9 @@ async function new_inputs() {
   div.appendChild(input);
   cont++;
 }
+let form = document.createElement("form");
+form.setAttribute("enctype", "multipart/form-data");
+form.id = "foto";
 let div_inputs = document.createElement("div");
 let input_file = document.createElement("input");
 input_file.type = "file";
@@ -321,7 +433,8 @@ input_text.type = "text";
 input_text.id = "empleado";
 input_text.classList.add("swal2-input");
 input_text.placeholder = "Nombre del empleado";
-div_inputs.appendChild(input_file);
+form.appendChild(input_file);
+div_inputs.appendChild(form);
 div_inputs.appendChild(br);
 div_inputs.appendChild(img);
 div_inputs.appendChild(br);
@@ -340,7 +453,13 @@ async function create_empleado() {
       if (!empleado) {
         Swal.showValidationMessage(`Por favor Ingresa un nombre `);
       } else {
-        nuevo_empleado_dacesa(String(img_preview), empleado);
+        let foto_empleado = $("#file").prop("files")[0];
+        let form_data = new FormData();
+        form_data.append("file", foto_empleado);
+        form_data.append("nombre", empleado);
+        form_data.append("option",1);
+         nuevo_empleado_dacesa(form_data);
+       
         div_card = document.createElement("div");
         div_card.classList.add("card");
         div_card.style.width = "15rem";
@@ -368,6 +487,7 @@ async function create_empleado() {
   }).then((result) => {});
 }
 async function click_empresa(empresa) {
+  empresa_tabla = empresa;
   let Nombres = [];
   titulos = [];
   let title  = [];
@@ -382,15 +502,17 @@ async function click_empresa(empresa) {
   let col_2 = document.createElement("div");
   let col_3 = document.createElement("div");
   let col_4 = document.createElement("div");
-  col_1.classList.add("offset-2");
+  let col_5 = document.createElement("div");
   col_1.classList.add("col-2");
   col_2.classList.add("col-2");
   col_3.classList.add("col-2");
   col_4.classList.add("col-2");
+  col_5.classList.add("col-2");
   let button_remove = document.createElement("button");
   let button_add = document.createElement("button");
   let button_update = document.createElement("button");
   let button = document.createElement("button");
+  let button_reporte = document.createElement("button");
   button_remove.classList.add("btn");
   button_remove.classList.add("btn-danger");
   button_add.classList.add("btn");
@@ -398,10 +520,13 @@ async function click_empresa(empresa) {
   button_add.onclick = function() {
     new_campo_empresa(empresa);
   }
+  button_reporte.textContent = "Generar reporte";
+  button_reporte.classList.add("btn");
+  button_reporte.classList.add("btn-success");
   button_update.classList.add("btn");
   button_update.classList.add("btn-warning");
- 
-  button_remove.textContent = "Elminar Campo";
+  button_reporte.onclick = function() {reporte_empresa()}
+  button_remove.textContent = "Eliminar Campo";
   button_add.textContent = "Agregar Campo";
   button_update.textContent = "Actualizar Campo";
   button.textContent= "Agregar";
@@ -411,10 +536,12 @@ async function click_empresa(empresa) {
   col_2.appendChild(button_update);
   col_3.appendChild(button_remove);
   col_4.appendChild(button);
+  col_5.appendChild(button_reporte);
   div_row.appendChild(col_1);
   div_row.appendChild(col_2);
   div_row.appendChild(col_3);
   div_row.appendChild(col_4);
+  div_row.appendChild(col_5);
   div_row.style.marginBottom = "1rem";
   let table = document.createElement("table");
   table.id = "example";
@@ -464,8 +591,9 @@ async function click_empresa(empresa) {
             datos.push(element);
           }
 
-          console.log(columnas);
           cont++;
+          total = Nombres.length;
+
           button.onclick = function() {
             new_campo(title,empresa,Nombres);
           };
@@ -484,6 +612,31 @@ async function click_empresa(empresa) {
           columns: columnas,
           columnDefs: titulos,
           data: datos,
+          dom: 'Bfrtip',
+          buttons: [
+              'copy', 'csv', 'excel', 'pdf'
+          ],
+          language: {
+            "decimal": "",
+            "emptyTable": "No hay información",
+            "info": "Mostrando _START_ a _END_ de _TOTAL_ Documentos",
+            "infoEmpty": "Mostrando 0 to 0 of 0 Documentos",
+            "infoFiltered": "(Filtrado de _MAX_ total entradas)",
+            "infoPostFix": "",
+            "thousands": ",",
+            "lengthMenu": "Mostrar _MENU_ Documentos",
+            "loadingRecords": "Cargando...",
+            "processing": "Procesando...",
+            "search": "Buscar:",
+            "zeroRecords": "Sin resultados encontrados",
+            "paginate": {
+                "first": "Primero",
+                "last": "Ultimo",
+                "next": "Siguiente",
+                "previous": "Anterior"
+              }
+              },
+              
           initComplete: function() {
             $(document).on("click", "button[role='editar']", function() {
               let obj ={
@@ -556,6 +709,7 @@ async function click_empresa(empresa) {
       })
       .catch((err) => {});
   });
+
 }
 
 
@@ -563,7 +717,6 @@ async function click_empresa(empresa) {
 
 export  async function new_campo(title,empresa,Nombres) {
   let empleados =  await view_empleados();
-  console.log(JSON.stringify(empleados));
   let div = document.createElement("div");
  let array_inputs =[];
  let cont = 0;
@@ -766,5 +919,37 @@ async function delete_campo_empresa (titulos,empresa){
           click_empresa(empresa);
           }
       }
+  });
+}
+ async function reporte_empresa(){
+  let array_nombres = [];
+  let name = null;
+  let activos = $('#example tr').length -1;
+  container.innerHTML = "";
+  let canvas = document.createElement("canvas");
+  let div = document.createElement("div");
+  div.style.maxWidth= "400px";
+  div.style.maxHeight="400px";
+  div.appendChild(canvas);
+  container.appendChild(div);
+  let inactivos = total - activos;
+
+  
+  new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels: ['Inactivos', 'Activos'],
+      datasets: [{
+        label:  empresa_tabla,
+        data: [inactivos, activos],        
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
   });
 }

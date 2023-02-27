@@ -12,12 +12,12 @@ include_once("./methods.php");
 
    $POST = json_decode(file_get_contents("php://input"), true);
     
-   if(isset ($POST["option"])){
-      saveuser($POST["nombre"],$POST["imagen"]);
+   if(isset ($_POST["option"])){
+       saveuser($_POST["nombre"],$_FILES);
    }
-   if(isset ($POST["option2"])){
-      savempresa($POST["empresa"]);
-      savecamposmpresas($POST);
+   if(isset ($_POST["option2"])){
+      savempresa($_POST["empresa"]);
+      savecamposmpresas($_POST);
 }
 if(isset ($POST["option3"])){
    getempresas();
